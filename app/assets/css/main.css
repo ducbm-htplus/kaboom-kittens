@@ -89,6 +89,7 @@ body {
   color: var(--text);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* Everything the pages render sits above the ground colour. */
@@ -124,6 +125,7 @@ button {
   background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
   box-shadow: var(--shadow-sm);
   border-radius: 999px;
+  min-height: 40px;
   padding: 0.55rem 1.15rem;
   cursor: pointer;
   transition:
@@ -165,6 +167,7 @@ select {
   border: var(--outline-width) solid var(--ink);
   border-radius: var(--radius);
   box-shadow: none;
+  min-height: 40px;
   padding: 0.55rem 0.8rem;
   width: 100%;
 }

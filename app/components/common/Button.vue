@@ -80,6 +80,7 @@ button.btn(
     border: $outline-width solid $ink;
     border-radius: 999px;
     box-shadow: $shadow-sm;
+    min-height: 40px;
     cursor: pointer;
     transition:
       transform 0.08s ease,

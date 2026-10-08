@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+  import { useWindowSize } from "@vueuse/core"
   import type { Card } from "#shared/types/game"
 
   interface SlotItem {
@@ -149,17 +150,20 @@
 
   defineExpose({ slotRect })
 
+  const { width: windowWidth } = useWindowSize()
+
   /**
    * Fans the cards out from the centre. Up to a full opening hand the cards
    * barely touch, so every title is readable; past that the overlap tightens to
-   * keep the fan inside FAN_W however big the hand gets. Hovering lifts a card
-   * clear of its neighbours, which is the escape hatch for a crowded hand.
+   * keep the fan inside the available width however big the hand gets.
    */
   const overlap = computed(() => {
     const count = slots.value.length
     if (count < 2) return 0
-    const needed = Math.ceil((CARD_W * count - FAN_W) / (count - 1))
-    return Math.max(6, Math.min(96, needed))
+    // Dynamic width constraint for mobile screens (with some padding).
+    const availableW = windowWidth.value > 0 ? Math.min(FAN_W, windowWidth.value - 32) : FAN_W
+    const needed = Math.ceil((CARD_W * count - availableW) / (count - 1))
+    return Math.max(6, Math.min(CARD_W - 28, needed)) // Guarantee at least 28px of card edge is visible
   })
 </script>
 
