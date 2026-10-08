@@ -225,8 +225,14 @@ export async function kickPlayer(
   })
   if (error) return error
 
-  const target = peersInRoom(roomId).find((l) => l.context.playerId === targetPlayerId)
-  if (target) send(target.peer, { type: 'kicked', code: 'kicked-by-host' })
+  // Detach every socket of the kicked player from the room on the server side
+  // too. Waiting for the client to close would leave a client that ignores the
+  // notice listening to snapshots and sitting in the voice roster.
+  for (const target of peersInRoom(roomId).filter((l) => l.context.playerId === targetPlayerId)) {
+    send(target.peer, { type: 'kicked', code: 'kicked-by-host' })
+    target.context.roomId = null
+  }
+  await removeVoiceMember(roomId, targetPlayerId)
   return undefined
 }
 

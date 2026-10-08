@@ -281,6 +281,14 @@ describe.skipIf(!serverUp)('end-to-end over websockets', () => {
     await bystander.waitForState((state) => state.players.length === 2, 5000, 'the roster to shrink')
     expect(bystander.state!.players.some((p) => p.id === target.playerId)).toBe(false)
 
+    // The server lets go of the kicked socket even if the client never closes it.
+    const snapshotsBefore = target.received.filter((m) => m.type === 'snapshot').length
+    host.send({ type: 'chat', text: 'still there?' })
+    await bystander.waitFor((m) => m.type === 'chat', 5000, 'the chat line')
+    await sleep(200)
+    expect(target.received.filter((m) => m.type === 'snapshot').length).toBe(snapshotsBefore)
+    expect(target.received.some((m) => m.type === 'chat' && m.message.text === 'still there?')).toBe(false)
+
     // Kicking is not a ban: the same player can rejoin normally.
     const rejoined = new TestClient(BASE_URL, target.nickname)
     rejoined.cookie = target.cookie
