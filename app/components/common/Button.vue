@@ -80,7 +80,6 @@ button.btn(
     border: $outline-width solid $ink;
     border-radius: 999px;
     box-shadow: $shadow-sm;
-    min-height: 40px;
     cursor: pointer;
     transition:
       transform 0.08s ease,
@@ -104,6 +103,10 @@ button.btn(
     &:focus-visible {
       outline: 3px solid $ink;
       outline-offset: 3px;
+    }
+
+    @media (pointer: coarse) {
+      min-height: 40px;
     }
 
     // Fills

@@ -30,7 +30,7 @@
         CommonButton(
           v-if="canQuit"
           :aria-label="$t('table.topbar.leave_match_title')"
-          :label="$t('table.topbar.leave_match')"
+          :label="isSmallScreen ? undefined : $t('table.topbar.leave_match')"
           icon="lucide:log-out"
           size="sm"
           variant="red"
@@ -358,6 +358,7 @@
 <script setup lang="ts">
   import type { Card, CardId, DeckOverrides, InteractionResponse } from "#shared/types/game"
   import { CARD_CATALOG } from "#shared/types/game"
+  import { useMediaQuery } from "@vueuse/core"
 
   const route = useRoute()
   const roomId = computed(() => String(route.params.id).toUpperCase())
@@ -381,10 +382,16 @@
 
   await load()
 
+  const isLargeScreen = useMediaQuery("(min-width: 1024px)")
+  const isSmallScreen = useMediaQuery("(max-width: 639px)")
+
   const selectedUids = ref<string[]>([])
   const targetId = ref<string | null>(null)
   const namedCardId = ref<CardId | null>(null)
   const logOpen = ref(true)
+  onMounted(() => {
+    logOpen.value = isLargeScreen.value
+  })
   const confirmingQuit = ref(false)
   const targetModalOpen = ref(false)
   const peekDismissed = ref(false)
@@ -868,10 +875,14 @@
     position: relative;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0.85rem 1.25rem 2rem;
+    padding: 0.85rem 1.25rem 5.5rem; // extra space for bottom log-dock toggle
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
+
+    @include respond-to("lg") {
+      padding-bottom: 2rem;
+    }
 
     // The shared header, given the room's own pill ground.
     &__header {
@@ -903,6 +914,9 @@
     &__id {
       font-size: 0.78rem;
       color: $ink-dim;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     /* Autoplay was blocked; one click on this wakes every remote audio element. */
@@ -1023,6 +1037,10 @@
     min-height: 74vh;
     padding: 1rem;
     border-radius: 26px;
+
+    @media (max-height: 500px) {
+      gap: 0.25rem 1.25rem;
+    }
 
     @include respond-to("lg") {
       grid-template-columns: 132px minmax(0, 1fr) 300px;
@@ -1170,21 +1188,34 @@
 
   .log-dock {
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
+    right: 0;
+    left: 0;
+    bottom: 0;
     z-index: 15;
-    width: min(360px, calc(100vw - 2rem));
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 0.4rem;
     opacity: 0.85;
     transition: opacity 0.2s ease;
+    padding: 0 1rem 1rem;
+    pointer-events: none; // let clicks pass through when collapsed
+
+    > * {
+      pointer-events: auto;
+    }
 
     &:hover,
     &:focus-within,
     &--open {
       opacity: 1;
+    }
+
+    @include respond-to("lg") {
+      right: 1rem;
+      left: auto;
+      width: min(360px, calc(100vw - 2rem));
+      padding: 0;
     }
 
     &__toggle {
