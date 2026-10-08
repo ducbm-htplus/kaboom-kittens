@@ -191,6 +191,9 @@ async function handle(peer: Peer, message: ClientMessage): Promise<void> {
       if (!context.roomId) return
       const roomId = context.roomId
       context.roomId = null
+      // Same rule as a closed socket: another tab still in the room keeps the
+      // seat, the voice entry and the spectator entry for this player.
+      if (playerHasOtherPeer(roomId, context.playerId, peer)) return broadcastRoom(roomId)
       await removeVoiceMember(roomId, context.playerId)
       await removeSpectator(roomId, context.playerId)
       await leaveRoom(roomId, context.playerId)
