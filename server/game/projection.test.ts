@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import type { GameState } from '#shared/types/game'
+import { STATE_VERSION, type GameState } from '#shared/types/game'
 import { projectStateFor } from './projection'
 
 function createFakeGameState(): GameState {
   return {
-    version: 5,
+    version: STATE_VERSION,
     roomId: 'room-1',
     status: 'playing',
     rngState: 123,
@@ -12,7 +12,7 @@ function createFakeGameState(): GameState {
     deckOverrides: {},
     players: [
       { id: 'p1', nickname: 'P1', avatarId: '1', seat: 0, hand: [{ uid: 'c1', id: 'defuse' }], alive: true, connected: true, ready: false, disconnectedAt: null },
-      { id: 'p2', nickname: 'P2', avatarId: '2', seat: 1, hand: [{ uid: 'c2', id: 'attack' }], alive: false, connected: true, ready: false, disconnectedAt: null },
+      { id: 'p2', nickname: 'P2', avatarId: '2', seat: 1, hand: [{ uid: 'c2', id: 'attack-2x' }], alive: false, connected: true, ready: false, disconnectedAt: null },
       { id: 'p3', nickname: 'P3', avatarId: '3', seat: 2, hand: [{ uid: 'c3', id: 'skip' }], alive: false, connected: true, ready: false, disconnectedAt: null }
     ],
     drawPile: [{ uid: 'd1', id: 'favor' }],
